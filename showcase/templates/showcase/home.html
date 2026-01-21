@@ -1,60 +1,83 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Obasi-sam Otei | Backend Engineer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; padding: 20px; }
-        header { text-align: center; margin-bottom: 50px; }
-        h1 { margin-bottom: 10px; }
-        .subtitle { color: #666; font-size: 1.2rem; }
-        .project-card { border: 1px solid #ddd; padding: 20px; margin-bottom: 30px; border-radius: 8px; }
-        .project-title { font-size: 1.5rem; font-weight: bold; margin-bottom: 10px; }
-        .project-links a { text-decoration: none; color: #007bff; margin-right: 15px; font-weight: bold; }
-        .project-links a:hover { text-decoration: underline; }
-        .tags span { background: #eee; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; margin-right: 5px; }
-        .project-image { max-width: 100%; height: auto; border-radius: 4px; margin-top: 15px; }
+        body { font-family: 'Inter', sans-serif; }
     </style>
 </head>
-<body>
+<body class="bg-gray-50 text-gray-900 min-h-screen">
 
-    <header>
-        <h1>Obasi-sam Otei</h1>
-        <p class="subtitle">Backend Software Engineer | Python & Django</p>
-        <p><a href="https://github.com/YourUsername" target="_blank">GitHub</a> | <a href="mailto:your-email@example.com">Contact</a></p>
-    </header>
-
-    <section>
-        <h2>Featured Projects</h2>
-        
-        {% for project in projects %}
-        <div class="project-card">
-            <div class="project-title">{{ project.title }}</div>
-            <p>{{ project.description }}</p>
+    <main class="max-w-4xl mx-auto px-6 py-20">
+        <header class="text-center mb-20">
+            <h1 class="text-4xl font-bold mb-4 tracking-tight">Obasi-sam Otei</h1>
+            <p class="text-xl text-gray-600 mb-8">Backend Software Engineer | Python & Django</p>
             
-            <div class="tags">
-                {% for tag in project.tags.all %}
-                <span>{{ tag.name }}</span>
+            <div class="flex justify-center gap-6">
+                <a href="https://github.com/obasi-1" target="_blank" class="text-gray-600 hover:text-black font-medium transition-colors border-b-2 border-transparent hover:border-black pb-1">
+                    GitHub
+                </a>
+                
+                <a href="https://linkedin.com/in/obasi-sam-otei-4b6688350" target="_blank" class="text-gray-600 hover:text-blue-600 font-medium transition-colors border-b-2 border-transparent hover:border-blue-600 pb-1">
+                    LinkedIn
+                </a>
+
+                <a href="mailto:obasonz61@gmail.com" class="text-gray-600 hover:text-red-600 font-medium transition-colors border-b-2 border-transparent hover:border-red-600 pb-1">
+                    Contact
+                </a>
+            </div>
+        </header>
+
+        <section>
+            <h2 class="text-2xl font-bold mb-8 text-gray-800">Featured Projects</h2>
+            
+            <div class="grid gap-8">
+                {% for project in projects %}
+                <article class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
+                    <div class="p-8">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold text-gray-900">{{ project.title }}</h3>
+                        </div>
+                        
+                        <p class="text-gray-600 mb-6 leading-relaxed">{{ project.description }}</p>
+                        
+                        <div class="flex flex-wrap gap-2 mb-6">
+                            {% for tag in project.tags.all %}
+                            <span class="px-3 py-1 bg-gray-100 text-gray-700 text-sm font-medium rounded-full">
+                                {{ tag.name }}
+                            </span>
+                            {% endfor %}
+                        </div>
+
+                        {% if project.image %}
+                        <div class="mb-6 rounded-lg overflow-hidden border border-gray-100">
+                            <img src="{{ project.image.url }}" alt="{{ project.title }}" class="w-full h-auto object-cover">
+                        </div>
+                        {% endif %}
+
+                        {% if project.github_link %}
+                        <a href="{{ project.github_link }}" target="_blank" class="inline-flex items-center text-blue-600 font-semibold hover:text-blue-800">
+                            View Code 
+                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                        </a>
+                        {% endif %}
+                    </div>
+                </article>
+                {% empty %}
+                <p class="text-gray-500 text-center py-10">No projects added yet.</p>
                 {% endfor %}
             </div>
+        </section>
+    </main>
 
-            {% if project.image %}
-            <img src="{{ project.image.url }}" alt="{{ project.title }}" class="project-image">
-            {% endif %}
-
-            <div class="project-links" style="margin-top: 15px;">
-                {% if project.github_link %}
-                <a href="{{ project.github_link }}" target="_blank">View Code &rarr;</a>
-                {% endif %}
-                {% if project.demo_link %}
-                <a href="{{ project.demo_link }}" target="_blank">Live Demo &rarr;</a>
-                {% endif %}
-            </div>
-        </div>
-        {% endfor %}
-
-    </section>
+    <footer class="text-center text-gray-400 py-12 text-sm">
+        <p>&copy; {% now "Y" %} Obasi-sam Otei. Built with Django & Tailwind.</p>
+    </footer>
 
 </body>
 </html>
