@@ -9,20 +9,22 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
-        /* Ensure the canvas sits behind the content */
+        
+        /* THE FIX: z-index is now 0 (not -1), so it sits ON TOP of the black background */
         #matrix-canvas {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1; /* Places it behind the text */
+            z-index: 0; 
         }
-        /* Make the hero section relative so the absolute canvas is positioned inside it */
+        
+        /* The container keeps the canvas inside the header area */
         .hero-section {
             position: relative;
-            overflow: hidden; /* Prevents scrollbars if the canvas is slightly off */
-            background-color: black; /* Fallback color */
+            background-color: black; 
+            overflow: hidden;
         }
     </style>
 </head>
@@ -33,23 +35,22 @@
 
         <div class="max-w-4xl mx-auto px-6 text-center relative z-10">
             
-            <div class="w-32 h-32 mx-auto mb-6 p-1 bg-black/30 backdrop-blur-md rounded-full border-2 border-green-500/50 shadow-lg shadow-green-500/20">
+            <div class="w-32 h-32 mx-auto mb-6 p-1 bg-black/50 backdrop-blur-md rounded-full border-2 border-green-500/50 shadow-[0_0_20px_rgba(34,197,94,0.4)]">
                 <img src="{% static 'assets/myself.jpg' %}" 
                      alt="Obasi-sam Otei" 
                      class="w-full h-full object-cover rounded-full">
             </div>
 
-            <h1 class="text-5xl font-bold mb-4 tracking-tight text-green-50">Obasi-sam Otei</h1>
-            <p class="text-xl text-green-200/90 mb-8 font-light">Backend Software Engineer | Python & Django Specialist</p>
+            <h1 class="text-5xl font-bold mb-4 tracking-tight text-green-50 drop-shadow-lg">Obasi-sam Otei</h1>
+            <p class="text-xl text-green-200/90 mb-8 font-light drop-shadow-md">Backend Software Engineer | Python & Django Specialist</p>
             
             <div class="flex flex-wrap justify-center gap-4">
-                
-                <a href="https://github.com/obasi-1" target="_blank" class="bg-black/50 text-green-400 border border-green-500/50 px-6 py-2 rounded-full font-semibold hover:bg-green-500/20 hover:text-green-300 transition shadow-[0_0_15px_rgba(34,197,94,0.2)] flex items-center gap-2 backdrop-blur-sm">
+                <a href="https://github.com/obasi-1" target="_blank" class="bg-black/60 text-green-400 border border-green-500/50 px-6 py-2 rounded-full font-semibold hover:bg-green-500/20 hover:text-green-300 transition shadow-[0_0_15px_rgba(34,197,94,0.2)] flex items-center gap-2 backdrop-blur-sm">
                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
                     GitHub
                 </a>
                 
-                <a href="https://www.linkedin.com/in/obasi-sam-otei-4b6688350" target="_blank" class="bg-black/50 text-green-400 border border-green-500/50 px-6 py-2 rounded-full font-semibold hover:bg-green-500/20 hover:text-green-300 transition shadow-[0_0_15px_rgba(34,197,94,0.2)] flex items-center gap-2 backdrop-blur-sm">
+                <a href="https://www.linkedin.com/in/obasi-sam-otei-4b6688350" target="_blank" class="bg-black/60 text-green-400 border border-green-500/50 px-6 py-2 rounded-full font-semibold hover:bg-green-500/20 hover:text-green-300 transition shadow-[0_0_15px_rgba(34,197,94,0.2)] flex items-center gap-2 backdrop-blur-sm">
                     LinkedIn
                 </a>
 
@@ -107,62 +108,58 @@
         const canvas = document.getElementById('matrix-canvas');
         const ctx = canvas.getContext('2d');
 
-        // Set canvas size to match the hero section container
+        // Robust sizing to ensure it fills the header
         function resizeCanvas() {
             const heroSection = document.querySelector('.hero-section');
-            canvas.width = heroSection.offsetWidth;
-            canvas.height = heroSection.offsetHeight;
+            if(heroSection) {
+                canvas.width = heroSection.offsetWidth;
+                canvas.height = heroSection.offsetHeight;
+            }
         }
+        
+        // Call immediately and slightly later to catch any layout shifts
         resizeCanvas();
+        setTimeout(resizeCanvas, 100);
         window.addEventListener('resize', resizeCanvas);
 
-        // Characters to use in the rain (0s and 1s for binary theme)
-        const chars = '01';
+        const chars = '10110';
         const charArray = chars.split('');
-        
         const fontSize = 14;
-        const columns = canvas.width / fontSize; // Number of columns for the rain
-        
-        // An array of drops - one per column
-        const drops = [];
-        for (let i = 0; i < columns; i++) {
-            drops[i] = Math.random() * canvas.height / fontSize; // Start at random heights
+        let columns = 0;
+        let drops = [];
+
+        // Initialize rain
+        function initRain() {
+            columns = Math.floor(canvas.width / fontSize);
+            drops = [];
+            for (let i = 0; i < columns; i++) {
+                drops[i] = Math.random() * canvas.height / fontSize;
+            }
         }
+        
+        // Wait for size before starting
+        setTimeout(initRain, 150);
 
         function draw() {
-            // Black BG for the canvas with a tiny bit of opacity to create the trail effect
+            // Semi-transparent black to create trails
             ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            ctx.fillStyle = '#0F0'; // Green text (#0F0 is bright green)
+            ctx.fillStyle = '#22c55e'; // Bright Tailwind Green
             ctx.font = fontSize + 'px monospace';
 
-            // Loop over drops
             for (let i = 0; i < drops.length; i++) {
-                // A random character to print
                 const text = charArray[Math.floor(Math.random() * charArray.length)];
-                
-                // x = distance between columns, y = distance between drops in a column
-                const x = i * fontSize;
-                const y = drops[i] * fontSize;
-                
-                // Draw the character
-                ctx.fillText(text, x, y);
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
 
-                // Sending the drop back to the top randomly after it has crossed the screen
-                // Adding a randomness to the reset to make the drops scattered on the Y axis
-                if (y > canvas.height && Math.random() > 0.975) {
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
                     drops[i] = 0;
                 }
-
-                // Incrementing Y coordinate
                 drops[i]++;
             }
         }
 
-        // Run the animation at 33 milliseconds per frame (~30fps)
         setInterval(draw, 33);
     </script>
-
 </body>
 </html>
