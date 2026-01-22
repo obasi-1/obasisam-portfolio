@@ -1,6 +1,12 @@
 from django.shortcuts import render
-from .models import Project
+from .models import Project, Profile  # Import Profile
 
 def home(request):
-    projects = Project.objects.all().order_by('-date_added')
-    return render(request, 'showcase/home.html', {'projects': projects})
+    projects = Project.objects.all()
+    # Get the first profile object, or None if it doesn't exist
+    profile = Profile.objects.first()
+    
+    return render(request, 'showcase/home.html', {
+        'projects': projects, 
+        'profile': profile
+    })
