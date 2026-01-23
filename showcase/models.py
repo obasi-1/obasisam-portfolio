@@ -24,7 +24,6 @@ class Profile(models.Model):
     headline = models.CharField(max_length=200)
     profile_image = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
     
-    # We only want ONE profile, so we override save to prevent duplicates
     def save(self, *args, **kwargs):
         if not self.pk and Profile.objects.exists():
             # If you try to create a second profile, it replaces the first one
