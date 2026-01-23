@@ -6,7 +6,7 @@ from .models import Project, Profile
 from .forms import ContactForm
 
 def home(request):
-    projects = Project.objects.all()
+    projects = Project.objects.prefetch_related('tags').all()
     profile = Profile.objects.first()
     
     if request.method == 'POST':
